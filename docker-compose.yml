@@ -1,0 +1,57 @@
+version: '3.2'
+
+services:
+
+    eventstore:
+        image: eventstore/eventstore:21.10.9-bionic
+        volumes:
+            - eventstore-data:/var/lib/eventstore
+        environment:
+            - EVENTSTORE_RUN_PROJECTIONS=ALL
+            - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+            - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+            - EVENTSTORE_INSECURE=true
+            - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+        ports:
+            - "1113:1113"
+            - "2113:2113"
+        networks:
+            - svc-net
+
+    postgres:
+        image: postgres:14.6
+        volumes:
+            - postgres-data:/var/lib/postgresql
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=changeit
+            - POSTGRES_DB=postgres
+        ports:
+            - "5432:5432"
+        networks:
+            - svc-net
+
+    rabbitmq:
+        image: rabbitmq:3.11.7-management
+        volumes:
+            - rabbitmq-data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+        networks:
+            - svc-net
+
+volumes:
+
+    eventstore-data:
+        driver: local
+
+    postgres-data:
+        driver: local
+
+    rabbitmq-data:
+        driver: local
+
+networks:
+    svc-net:
+        driver: bridge
