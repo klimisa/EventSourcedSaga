@@ -1,70 +1,53 @@
 namespace EventSourcedSaga.Barista.Saga;
 
 using Infrastructure.Saga;
+using Services;
+using Eventuous;
 
-public class DrinkPreparationSaga
+public class DrinkPreparationSaga : Aggregate<DrinkPreparationState>
 {
-    public record State
-    {
-        public record Initial : State;
-
-        public record PreparingDrink(string Drink, string Name) : State;
-
-        public record WaitingForPayment : State;
-
-        public record Completed : State;
-
-        public record WaitForDrinkAndPayment(bool DrinkReady, bool PaymentComplete);
-    };
-
-    public record Input
-    {
-        public record NewOrder(Guid CorrelationId, string Name, string Size, string Item) : Input;
-
-        public record PaymentComplete(Guid CorrelationId) : Input;
-    }
-
-    public record Output
-    {
-        public record DrinkReady(Guid CorrelationId, string Drink, string Name) : Output;
-
-        public record PrepareDrink(Guid CorrelationId, string Drink, string Name) : Output;
-    }
-
     public static State Evolve(State state, Event message) =>
         (state, message) switch
         {
-            (State.Initial, Event.Received<Input>(Input.NewOrder m)) =>
+            (Saga.State.Initial, Event.Received<Input>(Input.NewOrder m)) =>
                 new State.PreparingDrink(
                     $"{m.Size}, {m.Name}",
                     m.Name
                 ),
-            (State.PreparingDrink, Event.Received<Input>(Input.PaymentComplete m)) =>
+            (Saga.State.PreparingDrink, Event.Received<Input>(Input.PaymentComplete m)) =>
                 new State.Completed(),
             _ => state
         };
 
-    public static IEnumerable<Command> Handle(State state, Input message)
+    public void Handle(State state, Input message)
     {
         switch (state, message)
         {
-            case (State.Initial, Input.NewOrder m):
+            case (Saga.State.Initial, Input.NewOrder m):
                 var drink = $"{m.Size} {m.Item}";
                 Console.WriteLine($"{drink} for {m.Name}, got it!");
-                yield return new Output.PrepareDrink(
-                    m.CorrelationId,
-                    drink,
-                    m.Name
-                ).Send();
+                Apply(new Received__NewOrder(m));
+                Apply(new Sent__PrepareDrink(
+                        new Output.PrepareDrink(
+                            m.CorrelationId,
+                            drink,
+                            m.Name
+                        )
+                    )
+                );
                 break;
             case (State.PreparingDrink s, Input.PaymentComplete m):
                 Console.WriteLine($"Payment Complete for '{s.Name}' got it!");
-                yield return new Output.DrinkReady(
-                    m.CorrelationId,
-                    s.Drink,
-                    s.Name
-                ).Publish();
-                yield return new Command.Complete();
+                Apply(new Received__PaymentComplete(m));
+                Apply(new Published__DrinkReady(
+                        new Output.DrinkReady(
+                            m.CorrelationId,
+                            s.Drink,
+                            s.Name
+                        )
+                    )
+                );
+                Apply(new Command.Complete());
                 break;
             default: throw new Exception($"%A{message} can not be handled by %A{state}");
         }

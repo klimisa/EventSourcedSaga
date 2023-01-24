@@ -41,6 +41,18 @@ services:
         networks:
             - svc-net
 
+    mongo:
+        image: mongo:5.0.14
+        volumes:
+            - mongo-data:/data/db
+        env_file:
+            - compose-mongo.env
+            - compose-mongo.env.local
+        ports:
+            - "27017:27017"
+        networks:
+            - svc-net
+
 volumes:
 
     eventstore-data:
@@ -52,6 +64,10 @@ volumes:
     rabbitmq-data:
         driver: local
 
+    mongo-data:
+        driver: local
+
 networks:
+
     svc-net:
         driver: bridge

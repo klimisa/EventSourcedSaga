@@ -32,6 +32,21 @@ public class Event
         }
     }
 
+    public class Sent<TOutput> : Event
+    {
+        public Sent(TOutput @out)
+        {
+            Out = @out;
+        }
+
+        public TOutput Out { get; init; }
+
+        public void Deconstruct(out TOutput @out)
+        {
+            @out = Out;
+        }
+    }
+
     public class Replied<TOutput> : Event
     {
         public Replied(TOutput @out)
