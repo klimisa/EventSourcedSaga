@@ -1,7 +1,6 @@
 namespace EventSourcedSaga.Barista.Services;
 
 using Eventuous;
-using Infrastructure.Saga;
 using Saga;
 
 public record DrinkPreparationState : State<DrinkPreparationState>

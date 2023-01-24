@@ -1,8 +1,8 @@
 namespace EventSourcedSaga.Barista.Saga;
 
-using Infrastructure.Saga;
 using Services;
 using Eventuous;
+using Infrastructure.Process;
 
 public class DrinkPreparationSaga : Aggregate<DrinkPreparationState>
 {

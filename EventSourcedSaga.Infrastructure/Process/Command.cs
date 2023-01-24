@@ -1,4 +1,4 @@
-namespace EventSourcedSaga.Infrastructure.Saga;
+namespace EventSourcedSaga.Infrastructure.Process;
 
 public record Command
 {

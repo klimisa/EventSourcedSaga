@@ -1,6 +1,6 @@
 namespace EventSourcedSaga.Cashier.Saga;
 
-using Infrastructure.Saga;
+using Infrastructure.Process;
 
 public class CashierSaga
 {

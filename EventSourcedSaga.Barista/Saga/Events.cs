@@ -1,6 +1,6 @@
 namespace EventSourcedSaga.Barista.Saga;
 
-using Infrastructure.Saga;
+using Infrastructure.Process;
 
 public class Received__NewOrder : Event.Received<Input.NewOrder>
 {
