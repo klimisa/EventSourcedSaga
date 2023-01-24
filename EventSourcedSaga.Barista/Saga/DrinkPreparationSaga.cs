@@ -47,7 +47,7 @@ public class DrinkPreparationSaga : Aggregate<DrinkPreparationState>
                         )
                     )
                 );
-                Apply(new Command.Complete());
+                Apply(new Completed());
                 break;
             default: throw new Exception($"%A{message} can not be handled by %A{state}");
         }
