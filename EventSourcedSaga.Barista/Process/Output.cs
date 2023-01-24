@@ -1,4 +1,4 @@
-namespace EventSourcedSaga.Barista.Saga;
+namespace EventSourcedSaga.Barista.Process;
 
 public record Output
 {

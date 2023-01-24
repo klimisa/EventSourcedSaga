@@ -1,4 +1,4 @@
-namespace EventSourcedSaga.Barista.Saga;
+namespace EventSourcedSaga.Barista.Process;
 
 public record State
 {
@@ -6,9 +6,5 @@ public record State
 
     public record PreparingDrink(string Drink, string Name) : State;
 
-    public record WaitingForPayment : State;
-
     public record Completed : State;
-
-    public record WaitForDrinkAndPayment(bool DrinkReady, bool PaymentComplete);
 };

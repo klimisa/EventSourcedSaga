@@ -1,20 +1,20 @@
-namespace EventSourcedSaga.Barista.Saga;
+namespace EventSourcedSaga.Barista.Process;
 
 using Services;
-using Eventuous;
-using Infrastructure.Process;
+using EventSourcedSaga.Infrastructure.Process;
+using Eventuous.Process;
 
-public class DrinkPreparationSaga : Aggregate<DrinkPreparationState>
+public class DrinkPreparation : Process<DrinkPreparationState>
 {
     public static State Evolve(State state, Event message) =>
         (state, message) switch
         {
-            (Saga.State.Initial, Event.Received<Input>(Input.NewOrder m)) =>
+            (Process.State.Initial, Event.Received<Input>(Input.NewOrder m)) =>
                 new State.PreparingDrink(
                     $"{m.Size}, {m.Name}",
                     m.Name
                 ),
-            (Saga.State.PreparingDrink, Event.Received<Input>(Input.PaymentComplete m)) =>
+            (Process.State.PreparingDrink, Event.Received<Input>(Input.PaymentComplete m)) =>
                 new State.Completed(),
             _ => state
         };
@@ -23,7 +23,7 @@ public class DrinkPreparationSaga : Aggregate<DrinkPreparationState>
     {
         switch (state, message)
         {
-            case (Saga.State.Initial, Input.NewOrder m):
+            case (Process.State.Initial, Input.NewOrder m):
                 var drink = $"{m.Size} {m.Item}";
                 Console.WriteLine($"{drink} for {m.Name}, got it!");
                 Apply(new Received__NewOrder(m));
@@ -36,7 +36,7 @@ public class DrinkPreparationSaga : Aggregate<DrinkPreparationState>
                     )
                 );
                 break;
-            case (State.PreparingDrink s, Input.PaymentComplete m):
+            case (Process.State.PreparingDrink s, Input.PaymentComplete m):
                 Console.WriteLine($"Payment Complete for '{s.Name}' got it!");
                 Apply(new Received__PaymentComplete(m));
                 Apply(new Published__DrinkReady(

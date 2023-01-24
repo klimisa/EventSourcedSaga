@@ -3,7 +3,7 @@ namespace EventSourcedSaga.Subscriber;
 using Eventuous.Subscriptions;
 using Eventuous.Subscriptions.Context;
 
-public class SagaProjection: IEventHandler
+public class ProcessManagerProjection: IEventHandler
 {
     public ValueTask<EventHandlingStatus> HandleEvent(IMessageConsumeContext context)
     {

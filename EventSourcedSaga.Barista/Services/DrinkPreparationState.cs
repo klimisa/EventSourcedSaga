@@ -1,9 +1,9 @@
 namespace EventSourcedSaga.Barista.Services;
 
-using Eventuous;
-using Saga;
+using Eventuous.Process;
+using Process;
 
-public record DrinkPreparationState : State<DrinkPreparationState>
+public record DrinkPreparationState : ProcessState<DrinkPreparationState>
 {
     public State State { get; init; }
 
@@ -12,13 +12,13 @@ public record DrinkPreparationState : State<DrinkPreparationState>
         On<Received__NewOrder>((state, @event) =>
             state with
             {
-                State = DrinkPreparationSaga.Evolve(new State.Initial(), @event)
+                State = DrinkPreparation.Evolve(new State.Initial(), @event)
             });
 
         On<Received__PaymentComplete>((state, @event) =>
             state with
             {
-                State = DrinkPreparationSaga.Evolve(state.State, @event)
+                State = DrinkPreparation.Evolve(state.State, @event)
             });
     }
 }

@@ -11,7 +11,7 @@ public static class Extensions
         services.AddSingleton(Mongo.ConfigureMongo());
         services.AddCheckpointStore<MongoCheckpointStore>();
         services.AddSubscription<AllStreamSubscription, AllStreamSubscriptionOptions>(
-            "saga", builder => builder.AddEventHandler<SagaProjection>()
+            "process-manager", builder => builder.AddEventHandler<ProcessManagerProjection>()
         );
     }
 }

@@ -1,10 +1,11 @@
 namespace EventSourcedSaga.Barista.Services;
 
 using Eventuous;
-using Saga;
+using Eventuous.Process;
 using Messages;
+using Process;
 
-public class BaristaService : ApplicationService<DrinkPreparationSaga, DrinkPreparationState, DrinkPreparationSagaId>
+public class BaristaService : ProcessManager<DrinkPreparation, DrinkPreparationState, DrinkPreparationId>
 {
     public BaristaService
     (
@@ -15,14 +16,14 @@ public class BaristaService : ApplicationService<DrinkPreparationSaga, DrinkPrep
     ) : base(store, factoryRegistry, streamNameMap, typeMap)
     {
         OnNew<NewOrder>(
-            message => new DrinkPreparationSagaId($"{message.Id}"),
+            message => new DrinkPreparationId($"{message.Id}"),
             (drinkPreparationSaga, message) =>
                 drinkPreparationSaga.Handle(
                     new State.Initial(),
                     message.ToInput())
         );
         OnExisting<PaymentComplete>(
-            message => new DrinkPreparationSagaId($"{message.OrderId}"),
+            message => new DrinkPreparationId($"{message.OrderId}"),
             (drinkPreparationSaga, message) =>
                 drinkPreparationSaga.Handle(
                     drinkPreparationSaga.State.State,
