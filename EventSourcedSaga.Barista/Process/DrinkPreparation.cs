@@ -21,33 +21,18 @@ public class DrinkPreparation : Process<DrinkPreparationState>
 
     public void Handle(State state, Input message)
     {
+        Apply(message.ToEvent());
         switch (state, message)
         {
             case (Process.State.Initial, Input.NewOrder m):
                 var drink = $"{m.Size} {m.Item}";
                 Console.WriteLine($"{drink} for {m.Name}, got it!");
-                Apply(new Received__NewOrder(m));
-                Apply(new Sent__PrepareDrink(
-                        new Output.PrepareDrink(
-                            m.CorrelationId,
-                            drink,
-                            m.Name
-                        )
-                    )
-                );
+                Apply(new Output.PrepareDrink(m.CorrelationId, drink, m.Name).Send().ToEvent());
                 break;
             case (Process.State.PreparingDrink s, Input.PaymentComplete m):
                 Console.WriteLine($"Payment Complete for '{s.Name}' got it!");
-                Apply(new Received__PaymentComplete(m));
-                Apply(new Published__DrinkReady(
-                        new Output.DrinkReady(
-                            m.CorrelationId,
-                            s.Drink,
-                            s.Name
-                        )
-                    )
-                );
-                Apply(new Completed());
+                Apply(new Output.DrinkReady(m.CorrelationId, s.Drink, s.Name).Publish().ToEvent());
+                Apply(new Output.Complete().Send().ToEvent());
                 break;
             default: throw new Exception($"%A{message} can not be handled by %A{state}");
         }

@@ -1,16 +1,26 @@
 namespace EventSourcedSaga.Barista.Messaging;
 
+using Eventuous;
 using MassTransit;
 using Messages;
+using Services;
 
 public class BaristaConsumer :
     IConsumer<NewOrder>,
     IConsumer<PrepareDrink>,
     IConsumer<PaymentComplete>
 {
+    private readonly BaristaService service;
+
+    public BaristaConsumer(BaristaService service)
+    {
+        this.service = service;
+    }
+
     public Task Consume(ConsumeContext<NewOrder> context)
     {
-        throw new NotImplementedException();
+        service.Handle(context.Message, CancellationToken.None);
+        return Task.CompletedTask;
     }
 
     public Task Consume(ConsumeContext<PrepareDrink> context)
@@ -20,6 +30,7 @@ public class BaristaConsumer :
 
     public Task Consume(ConsumeContext<PaymentComplete> context)
     {
-        throw new NotImplementedException();
+        service.Handle(context.Message, CancellationToken.None);
+        return Task.CompletedTask;
     }
 }

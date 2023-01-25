@@ -5,7 +5,7 @@ using Process;
 
 public record DrinkPreparationState : ProcessState<DrinkPreparationState>
 {
-    public State State { get; init; }
+    public State State { get; private init; }
 
     public DrinkPreparationState()
     {
